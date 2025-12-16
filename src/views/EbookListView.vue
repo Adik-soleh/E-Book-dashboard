@@ -3,7 +3,7 @@
     <div class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Digital Library</p>
-        <h1>Baca e-book premium dengan pengalaman seperti KONTOL</h1>
+        <h1>Baca e-book premium dengan pengalaman yang menarik</h1>
         <p class="subtitle">
           Kurasi harian menampilkan judul bisnis, teknologi, hingga fiksi populer. Semua terhubung dengan reader online,
           token download aman, dan Midtrans untuk pembayaran yang terpercaya.
