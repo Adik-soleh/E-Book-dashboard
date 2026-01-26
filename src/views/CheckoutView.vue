@@ -87,10 +87,12 @@ import { useRoute, useRouter } from 'vue-router';
 import { ordersApi } from '../api';
 import type { Order, OrderSummary } from '../types';
 import { useEbookStore } from '../stores/ebooks';
+import { useCartStore } from '../stores/cart';
 
 const route = useRoute();
 const router = useRouter();
 const ebookStore = useEbookStore();
+const cartStore = useCartStore();
 const provider = ref('midtrans');
 const orderSummary = ref<OrderSummary | null>(null);
 const liveOrder = ref<Order | null>(null);
@@ -159,6 +161,7 @@ const stopPolling = () => {
 const handlePaid = () => {
   stopPolling();
   ebookStore.fetchEbooks();
+  cartStore.fetchCart().catch(() => {});
 };
 
 const goToDetail = () => {

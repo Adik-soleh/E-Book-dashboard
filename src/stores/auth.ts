@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { authApi, usersApi } from '../api';
 import type { AuthPayload, AuthUser } from '../types';
 import { clearDownloadTokens } from '../utils/downloadTokens';
+import { useCartStore } from './cart';
 
 interface AuthState {
   user: AuthUser | null;
@@ -68,6 +69,8 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       clearDownloadTokens();
+      const cart = useCartStore();
+      cart.reset();
     },
   },
 });

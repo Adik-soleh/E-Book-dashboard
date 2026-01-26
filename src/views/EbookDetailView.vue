@@ -23,7 +23,16 @@
           <p class="price">{{ ebook.price ? `Rp ${ebook.price.toLocaleString()}` : 'Gratis' }}</p>
         </div>
         <div class="buttons">
-          <button v-if="!ebook.hasPurchased" class="primary" @click="goToCheckout">Purchase</button>
+          <button v-if="!ebook.hasPurchased && ebook.price > 0" class="primary" @click="goToCheckout">Beli sekarang</button>
+          <button
+            v-if="!ebook.hasPurchased && ebook.price > 0"
+            class="secondary"
+            @click="addToCart"
+            :disabled="addingToCart || inCart"
+          >
+            {{ inCart ? 'Dalam keranjang' : addingToCart ? 'Menambah…' : 'Tambah ke keranjang' }}
+          </button>
+          <button v-if="inCart && !ebook.hasPurchased" class="ghost" @click="goToCart">Lihat keranjang</button>
           <button v-if="ebook.canDownload" class="secondary" @click="downloadFile">Download</button>
           <button v-if="ebook.canDownload" class="ghost" @click="openReader">Read online</button>
         </div>
@@ -36,16 +45,20 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 import { ebooksApi } from '../api';
 import type { EbookDetail } from '../types';
 import { apiBaseUrl } from '../api/http';
 import { useAuthStore } from '../stores/auth';
 import { ensureDownloadToken } from '../utils/downloadTokens';
+import { useCartStore } from '../stores/cart';
 
 const route = useRoute();
 const router = useRouter();
 const auth = useAuthStore();
+const cart = useCartStore();
 const ebook = ref<EbookDetail | null>(null);
+const addingToCart = ref(false);
 
 onMounted(async () => {
   ebook.value = await ebooksApi.detail(route.params.id as string);
@@ -64,8 +77,36 @@ const cover = computed(() => {
   }
 });
 
+const inCart = computed(() => {
+  if (!ebook.value) return false;
+  return ebook.value.inCart || cart.hasItem(ebook.value.id);
+});
+
 const goToCheckout = () => {
   router.push({ name: 'checkout', params: { id: route.params.id } });
+};
+
+const addToCart = async () => {
+  if (!ebook.value) return;
+  if (!auth.user) {
+    router.push({ name: 'login', query: { redirect: route.fullPath } });
+    return;
+  }
+  if (addingToCart.value || inCart.value) return;
+  addingToCart.value = true;
+  try {
+    await cart.add(ebook.value.id);
+    await Swal.fire({
+      title: 'Sukses',
+      text: 'Ebook ditambahkan ke keranjang.',
+      icon: 'success',
+      confirmButtonColor: '#38bdf8',
+      background: '#0f172a',
+      color: '#e2e8f0',
+    });
+  } finally {
+    addingToCart.value = false;
+  }
 };
 
 const downloadFile = async () => {
@@ -76,6 +117,10 @@ const downloadFile = async () => {
 
 const openReader = () => {
   router.push({ name: 'reader', params: { id: route.params.id } });
+};
+
+const goToCart = () => {
+  router.push({ name: 'cart' });
 };
 </script>
 

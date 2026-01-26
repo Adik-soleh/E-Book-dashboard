@@ -10,6 +10,7 @@ export interface EbookSummary {
   createdAt: string;
   hasPurchased: boolean;
   canDownload: boolean;
+  inCart: boolean;
 }
 
 export interface EbookDetail extends EbookSummary {}
@@ -79,4 +80,31 @@ export interface AuthPayload {
   user: AuthUser;
   accessToken: string;
   refreshToken: string;
+}
+
+export interface CartLineItem {
+  id: string;
+  ebookId: string;
+  quantity: number;
+  lineTotal: number;
+  createdAt: string;
+  updatedAt: string;
+  ebook: {
+    id: string;
+    title: string;
+    author: string;
+    price: number;
+    coverUrl: string | null;
+  } | null;
+}
+
+export interface CartTotals {
+  items: number;
+  quantity: number;
+  subtotal: number;
+}
+
+export interface CartPayload {
+  items: CartLineItem[];
+  totals: CartTotals;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="app-shell">
     <div class="glow" />
-    <header class="app-header">
+  <header class="app-header">
       <router-link to="/" class="brand">
         <span class="dot" />
         E-Book <span>Vault</span>
@@ -9,6 +9,10 @@
       <nav class="nav-links">
         <router-link to="/">Home</router-link>
         <router-link v-if="auth.user" to="/library">My Library</router-link>
+        <router-link v-if="auth.user" to="/cart" class="cart-link">
+          Cart
+          <span v-if="cart.itemCount" class="cart-badge">{{ cart.itemCount }}</span>
+        </router-link>
         <router-link v-if="auth.user?.role === 'ADMIN'" to="/admin">Admin</router-link>
       </nav>
       <div class="auth-module">
@@ -32,11 +36,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
 import { useAuthStore } from './stores/auth';
+import { useCartStore } from './stores/cart';
 
 const auth = useAuthStore();
+const cart = useCartStore();
 const logout = async () => {
   const result = await Swal.fire({
     title: 'Logout dari akun?',
@@ -56,6 +62,18 @@ const logout = async () => {
 onMounted(() => {
   auth.hydrate();
 });
+
+watch(
+  () => auth.user,
+  (user) => {
+    if (user) {
+      cart.fetchCart().catch(() => cart.reset());
+    } else {
+      cart.reset();
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>
@@ -122,6 +140,25 @@ onMounted(() => {
   padding: 0.4rem 1rem;
   border-radius: 999px;
   transition: color 0.2s, background 0.2s;
+}
+
+.cart-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cart-badge {
+  min-width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.2);
+  color: white;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.4rem;
 }
 
 .nav-links a.router-link-active {

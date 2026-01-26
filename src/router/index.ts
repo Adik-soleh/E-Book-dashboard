@@ -6,6 +6,7 @@ import ReaderView from '../views/ReaderView.vue';
 import AdminDashboard from '../views/AdminDashboard.vue';
 import AdminUploadView from '../views/AdminUploadView.vue';
 import LibraryView from '../views/LibraryView.vue';
+import CartView from '../views/CartView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import { useAuthStore } from '../stores/auth';
@@ -18,6 +19,7 @@ const router = createRouter({
     { path: '/checkout/:id', name: 'checkout', component: CheckoutView, props: true, meta: { requiresAuth: true } },
     { path: '/reader/:id', name: 'reader', component: ReaderView, props: true, meta: { requiresAuth: true } },
     { path: '/library', name: 'library', component: LibraryView, meta: { requiresAuth: true } },
+    { path: '/cart', name: 'cart', component: CartView, meta: { requiresAuth: true } },
     { path: '/admin', name: 'admin', component: AdminDashboard, meta: { requiresAuth: true, adminOnly: true } },
     {
       path: '/admin/upload',

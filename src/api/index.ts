@@ -3,6 +3,7 @@ import type {
   AdminOrder,
   AuthPayload,
   AuthUser,
+  CartPayload,
   EbookDetail,
   EbookSummary,
   Order,
@@ -52,4 +53,12 @@ export const downloadApi = {
 export const readerApi = {
   updateProgress: (payload: ReadingProgress) => http.patch('/reader/update-progress', payload),
   getProgress: (ebookId: string) => http.get<ReadingProgress | null>(`/reader/${ebookId}`),
+};
+
+export const cartApi = {
+  list: () => http.get<CartPayload>('/cart'),
+  add: (payload: { ebookId: string; quantity?: number }) => http.post<CartPayload>('/cart', payload),
+  update: (itemId: string, payload: { quantity: number }) => http.patch<CartPayload>(`/cart/${itemId}`, payload),
+  remove: (itemId: string) => http.delete<CartPayload>(`/cart/${itemId}`),
+  clear: () => http.delete<CartPayload>('/cart'),
 };
